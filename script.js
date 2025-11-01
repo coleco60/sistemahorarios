@@ -971,26 +971,29 @@ function initTurmas() {
         };
 
         try {
-            if (currentEditingItemId) {
-                // MODO DE EDIÇÃO
-                const turmaRef = window.dbRef(window.firebaseDB, `turmas/${currentEditingItemId}`);
-                turmaData.updatedAt = window.dbServerTimestamp;
-                await window.dbUpdate(turmaRef, turmaData);
-
-                showAlert('Turma atualizada com sucesso!', 'success');
-            } else {
-                // MODO DE CRIAÇÃO
-                const turmaListRef = window.dbRef(window.firebaseDB, 'turmas');
-                turmaData.createdAt = window.dbServerTimestamp;
-                await window.dbPush(turmaListRef, turmaData);
-
-                showAlert('Turma cadastrada com sucesso!', 'success');
-            }
-            cancelEditing(); // Reseta o formulário e o estado de edição
-        } catch (error) {
-            console.error('Erro ao salvar turma:', error);
-            showAlert('Erro ao salvar turma: ' + error.message, 'error');
-        }
+    if (currentEditingItemId) {
+        // MODO DE EDIÇÃO
+        const turmaRef = window.dbRef(window.firebaseDB, `turmas/${currentEditingItemId}`);
+        await window.dbUpdate(turmaRef, {
+            ...turmaData,
+            updatedAt: window.dbServerTimestamp()
+        });
+        showAlert('Turma atualizada com sucesso!', 'success');
+    } else {
+        // MODO DE CRIAÇÃO
+        const turmaListRef = window.dbRef(window.firebaseDB, 'turmas');
+        await window.dbPush(turmaListRef, {
+            ...turmaData,
+            createdAt: window.dbServerTimestamp(),
+            updatedAt: window.dbServerTimestamp()
+        });
+        showAlert('Turma cadastrada com sucesso!', 'success');
+    }
+    cancelEditing();
+} catch (error) {
+    console.error('Erro ao salvar turma:', error);
+    showAlert('Erro ao salvar turma: ' + error.message, 'error');
+}
     });
 
     // Search functionality
@@ -2741,5 +2744,6 @@ window.gerarListaDisciplinasPDF = gerarListaDisciplinasPDF;
     initFirebaseListeners();
     console.log('Sistema inicializado!');
 });
+
 
 
