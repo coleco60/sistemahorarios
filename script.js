@@ -3,13 +3,7 @@
 // Declare como variável global no topo do arquivo
 let currentSlot = null;
 
-function editHorarioSlot(turmaId, dia, bloco) {
-    const turma = appData.turmas[turmaId];
-    if (!turma) return;
 
-    currentSlot = { turmaId, dia, bloco };
-    // ... resto do código
-}
 // Estrutura de dados global
 let appData = {
     professores: {},
@@ -2747,4 +2741,5 @@ window.gerarListaDisciplinasPDF = gerarListaDisciplinasPDF;
     initFirebaseListeners();
     console.log('Sistema inicializado!');
 });
+
 
