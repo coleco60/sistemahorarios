@@ -464,27 +464,32 @@ function initProfessores() {
         };
 
         try {
-            if (currentEditingItemId) {
-                // MODO DE EDIÇÃO: Atualiza o professor existente
-                const professorRef = window.dbRef(window.firebaseDB, `professores/${currentEditingItemId}`);
-                professorData.updatedAt = window.dbServerTimestamp; // Adiciona timestamp de atualização
-                await window.dbUpdate(professorRef, professorData); // Usa dbUpdate para atualizar campos específicos
+    if (currentEditingItemId) {
+        // MODO DE EDIÇÃO: Atualiza o professor existente
+        const professorRef = window.dbRef(window.firebaseDB, `professores/${currentEditingItemId}`);
+        await window.dbUpdate(professorRef, {
+            ...professorData,
+            updatedAt: window.dbServerTimestamp() // ← CHAMAR A FUNÇÃO
+        });
 
-                showAlert('Professor atualizado com sucesso!', 'success');
-            } else {
-                // MODO DE CRIAÇÃO: Adiciona um novo professor
-                const professorListRef = window.dbRef(window.firebaseDB, 'professores');
-                professorData.createdAt = window.dbServerTimestamp; // Adiciona timestamp de criação
-                await window.dbPush(professorListRef, professorData);
+        showAlert('Professor atualizado com sucesso!', 'success');
+    } else {
+        // MODO DE CRIAÇÃO: Adiciona um novo professor
+        const professorListRef = window.dbRef(window.firebaseDB, 'professores');
+        await window.dbPush(professorListRef, {
+            ...professorData,
+            createdAt: window.dbServerTimestamp(), // ← CHAMAR A FUNÇÃO
+            updatedAt: window.dbServerTimestamp()  // ← CHAMAR A FUNÇÃO
+        });
 
-                showAlert('Professor cadastrado com sucesso!', 'success');
-            }
+        showAlert('Professor cadastrado com sucesso!', 'success');
+    }
 
-            cancelEditing(); // Reseta o formulário e o estado de edição após o sucesso
-        } catch (error) {
-            console.error('Erro ao salvar professor:', error);
-            showAlert('Erro ao salvar professor: ' + error.message, 'error');
-        }
+    cancelEditing(); // Reseta o formulário e o estado de edição após o sucesso
+} catch (error) {
+    console.error('Erro ao salvar professor:', error);
+    showAlert('Erro ao salvar professor: ' + error.message, 'error');
+}
     });
 
     // Search functionality
@@ -2744,6 +2749,7 @@ window.gerarListaDisciplinasPDF = gerarListaDisciplinasPDF;
     initFirebaseListeners();
     console.log('Sistema inicializado!');
 });
+
 
 
 
